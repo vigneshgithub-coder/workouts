@@ -1,0 +1,37 @@
+<p>workout-list </p>
+
+<table *ngIf="workouts.length>0;else noData">
+<thead>
+    <tr>
+        <th>username</th>
+        <th>workoutType</th>
+        <th>workoutminute</th>
+    </tr>
+</thead>
+    <tbody>
+        <tr *ngFor="let workout of workouts">
+        <td>{{workout.username}}</td>
+        <td>{{workout.workoutType}}</td>
+         <td>{{workout.workoutminutes}}</td>   
+
+
+
+        </tr>
+    </tbody>
+
+
+</table>
+
+
+<ng-template #noData>
+    <p>no data saved yet.</p>
+</ng-template>
+
+
+
+
+
+
+
+
+
