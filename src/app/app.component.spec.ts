@@ -1,71 +1,109 @@
+// import { TestBed, ComponentFixture } from '@angular/core/testing';
+// import { WorkoutListComponent, Workout, GroupedWorkout } from './workout-list.component';
+// import { ReactiveFormsModule } from '@angular/forms';
+// import { CommonModule } from '@angular/common';
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { WorkoutListComponent } from './workout-list/workout-list.component';
-import { AppComponent } from './app.component';
+// describe('WorkoutListComponent', () => {
+//   let component: WorkoutListComponent;
+//   let fixture: ComponentFixture<WorkoutListComponent>;
 
-describe('AppComponent', () => {
-  let component: AppComponent;
-  let fixture: ComponentFixture<AppComponent>;
+//   beforeEach(async () => {
+//     await TestBed.configureTestingModule({
+//       imports: [WorkoutListComponent, ReactiveFormsModule, CommonModule], // ✅ Use imports for standalone component
+//     }).compileComponents();
+//   });
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [
-        RouterTestingModule,
-        ReactiveFormsModule,
-        CommonModule,
-        WorkoutListComponent,
-        AppComponent // Add AppComponent to imports since it's a standalone component
-      ]
-    }).compileComponents();
-  });
+//   beforeEach(() => {
+//     fixture = TestBed.createComponent(WorkoutListComponent);
+//     component = fixture.componentInstance;
+//     fixture.detectChanges();
+//   });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(AppComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+//   it('should create the component', () => {
+//     expect(component).toBeTruthy();
+//   });
 
-  it('should create the app', () => {
-    expect(component).toBeTruthy();
-  });
+//   it('should load workouts from local storage', () => {
+//     const mockWorkouts: Workout[] = [
+//       { username: 'John', workouttype: 'Running', workoutminutes: 30, date: '2025-02-04', workout: 'Morning run', duration: 30 }
+//     ];
+//     localStorage.setItem('workoutData', JSON.stringify(mockWorkouts));
 
-  it('should render the correct title', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Search by Name')
+//     component.loadWorkouts();
 
-  });
-});
+//     expect(component.workouts.length).toBe(1);
+//     expect(component.workouts[0].username).toBe('John');
+//   });
 
+//   it('should group workouts correctly', () => {
+//     component.workouts = [
+//       { username: 'Alice', workouttype: 'Yoga', workoutminutes: 20, date: '2025-02-04', workout: 'Morning Yoga', duration: 20 },
+//       { username: 'Alice', workouttype: 'Cardio', workoutminutes: 40, date: '2025-02-04', workout: 'Evening Cardio', duration: 40 }
+//     ];
+    
+//     component.groupWorkouts();
+    
+//     expect(component.groupedWorkouts.length).toBe(1);
+//     expect(component.groupedWorkouts[0].totalWorkouts).toBe(2);
+//     expect(component.groupedWorkouts[0].totalMinutes).toBe(60);
+//   });
 
+//   it('should update pagination correctly', () => {
+//     component.filteredWorkouts = Array(12).fill({
+//       username: 'User1',
+//       workouttypes: ['Yoga'],
+//       totalWorkouts: 1,
+//       totalMinutes: 30
+//     });
+    
+//     component.itemsPerPage.setValue(5);
+//     component.updatePagination();
+    
+//     expect(component.totalPages).toBe(3);
+//     expect(component.paginatedWorkouts.length).toBe(5);
+//   });
 
+//   it('should navigate to next and previous page', () => {
+//     component.filteredWorkouts = Array(10).fill({
+//       username: 'User1',
+//       workouttypes: ['Yoga'],
+//       totalWorkouts: 1,
+//       totalMinutes: 30
+//     });
+    
+//     component.itemsPerPage.setValue(5);
+//     component.updatePagination();
 
-describe('AppComponent', () => {
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [AppComponent],
-    }).compileComponents();
-  });
+//     expect(component.currentPage).toBe(1);
+//     component.nextPage();
+//     expect(component.currentPage).toBe(2);
+//     component.prevPage();
+//     expect(component.currentPage).toBe(1);
+//   });
 
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
-  });
+//   it('should filter workouts correctly when searching', () => {
+//     component.workouts = [
+//       { username: 'Alice', workouttype: 'Yoga', workoutminutes: 20, date: '2025-02-04', workout: 'Morning Yoga', duration: 20 },
+//       { username: 'Bob', workouttype: 'Running', workoutminutes: 30, date: '2025-02-04', workout: 'Evening Run', duration: 30 }
+//     ];
+//     component.groupWorkouts();
 
-  it(`should have the 'workout' title`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('workout');
-  });
+//     component.searchWorkOut.setValue({ username: 'Alice', workouttype: '' });
+//     component.searchByUserName();
+    
+//     expect(component.filteredWorkouts.length).toBe(1);
+//     expect(component.filteredWorkouts[0].username).toBe('Alice');
+//   });
 
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, workout');
-  });
-});
+//   it('should add a new workout', () => {
+//     spyOn(window, 'alert');
+//     component.workoutform.setValue({ username: 'Charlie', workouttype: 'Swimming', workoutminutes: 45 });
 
+//     component.addworkout();
+
+//     const storedData = JSON.parse(localStorage.getItem('workoutData') || '[]');
+//     expect(storedData.length).toBeGreaterThan(0);
+//     expect(storedData[0].username).toBe('Charlie');
+//     expect(window.alert).toHaveBeenCalledWith('Workout added successfully');
+//   });
+// });

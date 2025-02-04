@@ -1,5 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { WorkoutListComponent } from './workout-list.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 describe('WorkoutListComponent', () => {
   let component: WorkoutListComponent;
@@ -7,85 +9,102 @@ describe('WorkoutListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-
-      declarations: [WorkoutListComponent]
+      // ✅ Use 'imports' instead of 'declarations' since it's a standalone component
+      imports: [WorkoutListComponent, ReactiveFormsModule, CommonModule],
     }).compileComponents();
   });
 
   beforeEach(() => {
-
-      imports: [WorkoutListComponent]
-    })
-    .compileComponents();
-
-
     fixture = TestBed.createComponent(WorkoutListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create the component', () => {
     expect(component).toBeTruthy();
   });
 
-
-  it('should initialize workouts correctly', () => {
-    component.workouts = [
-      { username: 'John', workouttype: 'Cardio', workoutminutes: 30, date: '2025-02-04', workout: 'Running', duration: 30 },
-      { username: 'Jane', workouttype: 'Strength', workoutminutes: 45, date: '2025-02-04', workout: 'Weightlifting', duration: 45 },
-      { username: 'Mike', workouttype: 'Yoga', workoutminutes: 20, date: '2025-02-04', workout: 'Stretching', duration: 20 },
-      { username: 'Alice', workouttype: 'Cycling', workoutminutes: 60, date: '2025-02-04', workout: 'Biking', duration: 60 },
-      { username: 'Bob', workouttype: 'Swimming', workoutminutes: 50, date: '2025-02-04', workout: 'Freestyle', duration: 50 },
-      { username: 'Sara', workouttype: 'Pilates', workoutminutes: 40, date: '2025-02-04', workout: 'Core Workout', duration: 40 },
-      { username: 'Tom', workouttype: 'HIIT', workoutminutes: 35, date: '2025-02-04', workout: 'Interval Training', duration: 35 }
+  it('should load workouts from local storage', () => {
+    const mockWorkouts = [
+      { username: 'John', workouttype: 'Running', workoutminutes: 30, date: '2025-02-04', workout: 'Morning run', duration: 30 }
     ];
+    localStorage.setItem('workoutData', JSON.stringify(mockWorkouts));
 
-    expect(component.workouts.length).toBe(7);
+    component.loadWorkouts();
+
+    expect(component.workouts.length).toBe(1);
+    expect(component.workouts[0].username).toBe('John');
   });
 
-  it('should filter workouts by username', () => {
+  it('should group workouts correctly', () => {
     component.workouts = [
-      { username: 'John', workouttype: 'Running', workoutminutes: 30, date: '2025-02-04', workout: 'Running', duration: 30 },
-      { username: 'Jane', workouttype: 'Cycling', workoutminutes: 45, date: '2025-02-04', workout: 'Cycling', duration: 45 }
+      { username: 'Alice', workouttype: 'Yoga', workoutminutes: 20, date: '2025-02-04', workout: 'Morning Yoga', duration: 20 },
+      { username: 'Alice', workouttype: 'Cardio', workoutminutes: 40, date: '2025-02-04', workout: 'Evening Cardio', duration: 40 }
     ];
-
-    component.searchByUserName('John');
-    expect(component.filteredWorkouts.length).toBe(1);
-    expect(component.filteredWorkouts[0].username).toBe('John');
-  });
-
-  it('should paginate workouts correctly', () => {
-    component.workouts = [
-      { username: 'John', workouttype: 'Running', workoutminutes: 30, date: '2025-02-04', workout: 'Running', duration: 30 },
-      { username: 'Jane', workouttype: 'Cycling', workoutminutes: 45, date: '2025-02-04', workout: 'Cycling', duration: 45 },
-      { username: 'Mike', workouttype: 'Yoga', workoutminutes: 20, date: '2025-02-04', workout: 'Stretching', duration: 20 },
-      { username: 'Alice', workouttype: 'Swimming', workoutminutes: 50, date: '2025-02-04', workout: 'Freestyle', duration: 50 },
-      { username: 'Bob', workouttype: 'HIIT', workoutminutes: 35, date: '2025-02-04', workout: 'Interval Training', duration: 35 }
-    ];
-
-    component.itemsPerPage = 2;
-    component.currentPage = 2;
-
-    component.paginateWorkouts();
-
-    expect(component.paginatedWorkouts.length).toBe(2);
-    expect(component.paginatedWorkouts[0]).toEqual(component.workouts[2]); // Page 2 should start with the 3rd workout
-  });
-
-  it('should handle invalid page numbers in pagination', () => {
-    component.totalPages = 3;
     
-    component.changePage(2);
-    expect(component.currentPage).toBe(2);
-
-    component.changePage(5); // Invalid page
-    expect(component.currentPage).toBe(2); // Should remain on the last valid page
+    component.groupWorkouts();
+    
+    expect(component.groupedWorkouts.length).toBe(1);
+    expect(component.groupedWorkouts[0].totalWorkouts).toBe(2);
+    expect(component.groupedWorkouts[0].totalMinutes).toBe(60);
   });
 
-  it('should update pagination correctly when items per page change', () => {
-    component.itemsPerPage.setValue(2);
+  it('should update pagination correctly', () => {
+    component.filteredWorkouts = Array(12).fill({
+      username: 'User1',
+      workouttypes: ['Yoga'],
+      totalWorkouts: 1,
+      totalMinutes: 30
+    });
+    
+    component.itemsPerPage.setValue(5);
     component.updatePagination();
-    expect(component.itemsPerPage.value).toBe(2);
+    
+    expect(component.totalPages).toBe(3);
+    expect(component.paginatedWorkouts.length).toBe(5);
   });
 
+  it('should navigate to next and previous page', () => {
+    component.filteredWorkouts = Array(10).fill({
+      username: 'User1',
+      workouttypes: ['Yoga'],
+      totalWorkouts: 1,
+      totalMinutes: 30
+    });
+    
+    component.itemsPerPage.setValue(5);
+    component.updatePagination();
+
+    expect(component.currentPage).toBe(1);
+    component.nextPage();
+    expect(component.currentPage).toBe(2);
+    component.prevPage();
+    expect(component.currentPage).toBe(1);
+  });
+
+  it('should filter workouts correctly when searching', () => {
+    component.workouts = [
+      { username: 'Alice', workouttype: 'Yoga', workoutminutes: 20, date: '2025-02-04', workout: 'Morning Yoga', duration: 20 },
+      { username: 'Bob', workouttype: 'Running', workoutminutes: 30, date: '2025-02-04', workout: 'Evening Run', duration: 30 }
+    ];
+    component.groupWorkouts();
+
+    component.searchWorkOut.setValue({ username: 'Alice', workouttype: '' });
+    component.searchByUserName();
+    
+    expect(component.filteredWorkouts.length).toBe(0);
+    expect(component.filteredWorkouts[0].username).toBe('Alice');
+  });
+
+  it('should add a new workout', () => {
+    spyOn(window, 'alert');
+    component.workoutform.setValue({ username: 'Charlie', workouttype: 'Swimming', workoutminutes: 45 });
+
+    component.addworkout();
+
+    const storedData = JSON.parse(localStorage.getItem('workoutData') || '[]');
+    expect(storedData.length).toBeGreaterThan(0);
+    expect(storedData[0].username).toBe('Charlie');
+    expect(window.alert).toHaveBeenCalledWith('Workout added successfully');
+  });
 });
