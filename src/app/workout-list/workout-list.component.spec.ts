@@ -7,11 +7,18 @@ describe('WorkoutListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+
       declarations: [WorkoutListComponent]
     }).compileComponents();
   });
 
   beforeEach(() => {
+
+      imports: [WorkoutListComponent]
+    })
+    .compileComponents();
+
+
     fixture = TestBed.createComponent(WorkoutListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -20,6 +27,7 @@ describe('WorkoutListComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
 
   it('should initialize workouts correctly', () => {
     component.workouts = [
@@ -79,4 +87,5 @@ describe('WorkoutListComponent', () => {
     component.updatePagination();
     expect(component.itemsPerPage.value).toBe(2);
   });
+
 });

@@ -1,3 +1,4 @@
+
 <!-- Add Workout Section -->
 <h2>Add Workout</h2>
 <form [formGroup]="workoutform">
@@ -43,7 +44,7 @@
 </form>
 
 <!-- Workout List Section -->
-<h1>Workout List</h1>
+
 <!-- Table to Display Workouts -->
 <table *ngIf="paginatedWorkouts.length > 0; else noData">
   <thead>
@@ -83,4 +84,15 @@
 <ng-template #noData>
   <p>No workout saved yet.</p>
 </ng-template>
+
+
+
+
+
+
+
+
+
+
+
 

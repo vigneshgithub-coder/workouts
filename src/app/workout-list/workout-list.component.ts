@@ -4,7 +4,7 @@ import { FormGroup, FormControl } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 
 // Interface to define the structure of a workout
- export interface Workout {
+export interface Workout {
   username: string;
   workouttype: string;
   workoutminutes: number;
@@ -43,12 +43,16 @@ export class WorkoutListComponent implements OnInit {
 
   // Function to load workouts from local storage
   loadWorkouts(): void {
-    const existingData = localStorage.getItem('workoutData');
-    if (existingData) {
-      this.workouts = JSON.parse(existingData);
+    try {
+      const existingData = localStorage.getItem('workoutData');
+      if (existingData) {
+        this.workouts = JSON.parse(existingData);
+      }
+      this.groupWorkouts(); // Group workouts after loading them
+      this.updatePagination(); // Update pagination
+    } catch (error) {
+      console.error('Error loading workouts from local storage:', error);
     }
-    this.groupWorkouts(); // Group workouts after loading them
-    this.updatePagination(); // Update pagination
   }
 
   // Function to group workouts by username
@@ -115,11 +119,13 @@ export class WorkoutListComponent implements OnInit {
   // Function to search workouts by username and workout type
   searchByUserName() {
     const searchdata = this.searchWorkOut.getRawValue();
-    console.log(searchdata);
+    console.log("Search data:", searchdata);
 
     const existingData = localStorage.getItem('workoutData');
     if (existingData) {
       this.workouts = JSON.parse(existingData);
+      console.log("Workouts from local storage:", this.workouts);
+
       this.groupWorkouts(); // Ensure we work with grouped data
 
       this.filteredWorkouts = this.groupedWorkouts.filter(workout => {
@@ -133,7 +139,9 @@ export class WorkoutListComponent implements OnInit {
       });
 
       this.updatePagination(); // Update pagination after filtering
-      console.log(this.filteredWorkouts);
+      console.log("Filtered Workouts:", this.filteredWorkouts);
+    } else {
+      console.log("No workouts found in local storage");
     }
   }
 
@@ -154,15 +162,23 @@ export class WorkoutListComponent implements OnInit {
     const newWorkoutData = this.workoutform.getRawValue();
     console.log(newWorkoutData);
 
-    const existingData = localStorage.getItem('workoutData');
-    const workouts = existingData ? JSON.parse(existingData) : [];
-    workouts.push(newWorkoutData);
+    try {
+      const existingData = localStorage.getItem('workoutData');
+      const workouts = existingData ? JSON.parse(existingData) : [];
+      workouts.push(newWorkoutData);
 
-    localStorage.setItem('workoutData', JSON.stringify(workouts));
-    console.log(localStorage.getItem('workoutData'));
-    alert("Workout added successfully");
+      localStorage.setItem('workoutData', JSON.stringify(workouts));
+      console.log(localStorage.getItem('workoutData'));
+      alert("Workout added successfully");
 
-    this.loadWorkouts(); // Reload workouts after adding a new one
-    this.groupWorkouts(); // Regroup workouts
+      this.loadWorkouts(); // Reload workouts after adding a new one
+      this.groupWorkouts(); // Regroup workouts
+      this.updatePagination(); // Update pagination
+    } catch (error) {
+      console.error('Error adding workout to local storage:', error);
+    }
   }
 }
+
+// Ensure to export the component
+export { WorkoutListComponent };
