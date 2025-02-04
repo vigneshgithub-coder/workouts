@@ -181,4 +181,4 @@ export class WorkoutListComponent implements OnInit {
 }
 
 // Ensure to export the component
-export { WorkoutListComponent };
+
