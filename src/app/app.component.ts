@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+
 import {FormGroup, FormControl} from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 
@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, ReactiveFormsModule, WorkoutListComponent, CommonModule],
+  imports: [ ReactiveFormsModule, WorkoutListComponent, CommonModule],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'] // Corrected from `styleUrl` to `styleUrls`
 })
